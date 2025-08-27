@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <title>VRM Viewer + Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- importmap はそのまま -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./node_modules/three/build/three.module.js",
+      "three/addons/": "./node_modules/three/examples/jsm/",
+      "@pixiv/three-vrm": "./node_modules/@pixiv/three-vrm/lib/three-vrm.module.min.js",
+      "meshoptimizer/meshopt_decoder.module.js": "./node_modules/meshoptimizer/meshopt_decoder.module.js"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <label class="btn" for="file">VRMを読み込む</label>
+      <input id="file" type="file" accept=".vrm,.VRM" />
+      <div class="spacer"></div>
+      <!-- ↓↓↓ status を消して設定ボタンに置き換え ↓↓↓ -->
+      <button class="btn" id="settingsBtn">⚙ 設定</button>
+      <!-- ↑↑↑ -->
+    </header>
+    <div id="viewer"><div id="drop">ここに .vrm をドロップ</div></div>
+  </div>
+
+  <!-- チャットUI -->
+  <section id="chat" class="top-shadow">
+    <div id="chat-bar">
+      <div id="chat-title">Chat with <span id="modelName">gpt-oss:20b</span></div>
+      <div class="spacer"></div>
+      <button class="btn" id="toggleSize">半分/小さく</button>
+    </div>
+    <div id="chat-log"></div>
+    <form id="chat-form" autocomplete="off">
+      <input id="chat-input" placeholder="メッセージを入力…" />
+      <button type="submit" id="chat-send" class="btn">送信</button>
+    </form>
+  </section>
+
+  <!-- 設定パネル（右上に出る） -->
+  <div id="settingsPanel">
+    <h2>設定</h2>
+    <label><input type="checkbox" id="idleToggle" checked> 待機アニメ有効</label><br>
+    <label><input type="checkbox" id="mouthToggle" checked> 口パク有効</label><br>
+    <button id="resetCam" class="btn">カメラリセット</button>
+<hr style="border-color:#333; margin:8px 0;">
+<label style="display:block; margin:6px 0 4px;">性格プリセット</label>
+<select id="personaPreset" style="width:100%;">
+  <option value="">（プリセット未選択）</option>
+  <option value="friendly">フレンドリー＆簡潔（絵文字控えめ）</option>
+  <option value="cute">かわいい系＆励まし多め</option>
+  <option value="serious">丁寧で落ち着いたトーン</option>
+</select>
+
+<label style="display:block; margin:8px 0 4px;">システムプロンプト</label>
+<textarea id="systemPrompt" rows="6" style="width:100%; box-sizing:border-box;"
+  placeholder="モデルへの性格・口調・制約などをここに書くと、以後の応答に反映されます。"></textarea>
+
+<div style="display:flex; gap:8px; margin-top:8px;">
+  <button id="savePersona" class="btn" style="flex:1;">保存</button>
+  <button id="resetPersona" class="btn" style="flex:1;">既定に戻す</button>
+</div>
+
+<hr style="border-color:#333; margin:8px 0;">
+<h3 style="margin:6px 0 8px; font-size:14px;">VOICEVOX 読み上げ</h3>
+
+<label style="display:block; margin:6px 0;">
+  <input type="checkbox" id="vvEnable" checked>
+  返答をVOICEVOXで読み上げる
+</label>
+
+<label style="display:block; margin:6px 0 4px;">エンドポイント</label>
+<input id="vvEndpoint" placeholder="http://127.0.0.1:50021" style="width:100%; box-sizing:border-box;">
+
+<div style="display:flex; gap:8px; margin-top:8px;">
+  <button id="vvRefresh" class="btn" style="flex:1;">話者一覧を取得</button>
+  <button id="vvTest" class="btn" style="flex:1;">テスト再生</button>
+</div>
+
+<label style="display:block; margin:8px 0 4px;">話者（スタイル）</label>
+<select id="vvSpeaker" style="width:100%;"></select>
+
+<!-- お好みで少しだけパラメータも -->
+<div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:8px;">
+  <label>速度<input id="vvSpeed" type="number" min="0.5" max="2" step="0.05" value="1.0" style="width:100%"></label>
+  <label>音量<input id="vvVolume" type="number" min="0" max="2" step="0.05" value="1.0" style="width:100%"></label>
+</div>
+
+  </div>
+
+  <style>
+  #settingsPanel {
+    position: fixed;
+    top: 50px;
+    right: 10px;
+    width: 200px;
+    padding: 12px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid #333;
+    border-radius: 10px;
+    color: #e5edf5;
+    font-size: 14px;
+    z-index: 30;
+    display: none;
+  }
+  #settingsPanel.open { display: block; }
+  #settingsPanel h2 { margin: 0 0 8px; font-size: 15px; }
+  </style>
+
+  <!-- メインJS -->
+  <script type="module" src="./js/app.js"></script>
+
+  <!-- 設定ボタンでパネルを開閉（簡易スクリプト） -->
+  <script>
+    const btn = document.getElementById('settingsBtn');
+    const panel = document.getElementById('settingsPanel');
+    if (btn && panel) {
+      btn.addEventListener('click', () => {
+        panel.classList.toggle('open');
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "my-ai-friends",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "electron": "^37.3.1"
+  },
+  "dependencies": {
+    "@pixiv/three-vrm": "^3.4.2",
+    "meshoptimizer": "^0.25.0",
+    "three": "^0.179.1"
+  }
+}

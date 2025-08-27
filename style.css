@@ -1,0 +1,110 @@
+/* ========== 基本レイアウト ========== */
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%;
+  background: #0b0f14; color: #e5edf5;
+  font: 14px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+}
+
+/* アプリの枠：上にヘッダ、下は3Dビュー（全面） */
+#app {
+  position: fixed; inset: 0;
+  display: grid; grid-template-rows: auto 1fr;
+}
+
+/* ========== ヘッダ ========== */
+header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: #101826;
+  border-bottom: 1px solid #1f2a37;
+  z-index: 10; /* オーバーレイ(#chat)よりは低い */
+}
+header h1 { margin: 0; font-size: 14px; font-weight: 700; opacity: .9; }
+.btn {
+  appearance: none; cursor: pointer;
+  border: 1px solid #243244; background: #172234; color: #cfe3ff;
+  padding: 8px 12px; border-radius: 10px; font-weight: 600;
+}
+#file { display: none; }
+.spacer { flex: 1; }
+#status { font: 12px/1.3 ui-monospace, monospace; opacity: .9; }
+
+/* ========== 3Dビュー領域 ========== */
+#viewer {
+  position: relative; /* dropヒントの基準 */
+  z-index: 1;         /* header < viewer < chat の順 */
+}
+canvas { display: block; width: 100%; height: 100%; }
+
+/* D&Dヒント */
+#drop {
+  position: absolute; inset: 8px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1.5px dashed #2d3b52; border-radius: 12px;
+  background: rgba(18,23,33,.38);
+  pointer-events: none; opacity: 0; transition: opacity .15s;
+  text-align: center; font-weight: 600;
+}
+#drop.active { opacity: 1; }
+
+/* ========== チャットのオーバーレイ（下半分固定） ========== */
+#chat {
+  position: fixed; left: 0; bottom: 0; width: 100%; height: 50dvh;
+  display: flex; flex-direction: column;
+  background: rgba(11,13,16,0.60);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  z-index: 20; /* 3Dより前に出す */
+  /* スクロールしても常に下に張り付く */
+}
+#chat.top-shadow { box-shadow: 0 -10px 30px rgba(0,0,0,0.35); }
+
+/* バー */
+#chat-bar {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+#chat-title { font-weight: 700; opacity: .9; }
+
+/* ログ */
+#chat-log {
+  flex: 1; overflow-y: auto; padding: 12px 14px;
+}
+.msg { margin: 0 0 10px; white-space: pre-wrap; }
+.msg.assistant {
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid #2b89ff;
+  padding: 6px 8px; border-radius: 6px;
+}
+.msg.user {
+  background: rgba(255,255,255,0.04);
+  padding: 6px 8px; border-radius: 6px;
+}
+.msg.pending { opacity: .75; font-style: italic; }
+
+/* 入力行 */
+#chat-form {
+  display: flex; gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+#chat-input {
+  flex: 1;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid #22303f;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #e5edf5;
+}
+#chat-input:focus { outline: none; border-color: #2b89ff; }
+#chat-send, #chat-stop { min-width: 88px; }
+
+/* ====== 便利: 狭い幅でも崩れにくく ====== */
+@media (max-width: 420px) {
+  header { gap: 6px; }
+  .btn { padding: 7px 10px; }
+  #chat { height: 55dvh; }
+}
